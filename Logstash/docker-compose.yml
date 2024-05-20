@@ -1,0 +1,31 @@
+version: '3'
+
+volumes:
+ certs:
+   driver: local
+ logstashdata01:
+   driver: local
+
+networks:
+ default:
+   name: elastic
+   external: true
+
+services:
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.13.2
+    labels:
+      co.elastic.logs/module: logstash
+    user: root
+    volumes:
+      - ./logs:/usr/share/logstash/data
+      - ./certs:/usr/share/logstash/certs
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    environment:
+      - NODE_NAME=logstash
+      - xpack.monitoring.enabled=false
+      - ELASTIC_HOSTS=http://elasticsearch:9200
+    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - "5044:5044/udp"
+    privileged: true

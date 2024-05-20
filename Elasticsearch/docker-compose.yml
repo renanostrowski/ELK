@@ -1,0 +1,21 @@
+services:
+  es01:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
+    environment:
+      - discovery.type=single-node
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=65%
+      - cluster.routing.allocation.disk.watermark.high=70%
+      - xpack.security.enabled=false
+      - xpack.security.audit.enabled=false
+      - ELASTIC_PASSWORD=somethingsecret
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    external: true
+    name: elastic
